@@ -1,0 +1,6 @@
+print("\nInstitution Details:")
+    print(f"Founder:{parsed_data.founder}")
+    print(f"Founded Year:{parsed_data.founded_year}")
+    print(f"Branches:{parsed_data.branches}")
+    print(f"Employees:{parsed_data.employees}")
+    print(f"Summary: {parsed_data.summary}")

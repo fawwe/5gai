@@ -1,0 +1,6 @@
+# 2
+
+imprt gensim.downloader as api
+imprt matplotlib.pyplot as plt
+from sklearn.decomposition imprt PCA
+imprt numpy as np

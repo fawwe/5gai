@@ -1,0 +1,6 @@
+cohere_llm =ChatCohere(model_name="command-xlarge-nightly")
+formatted_prompt =prompt_template.format(text=text_content)
+response =cohere_llm.invoke(formatted_prompt)
+
+print("\nGenerated Summary:")
+print(response.content)

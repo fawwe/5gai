@@ -1,0 +1,10 @@
+# 5
+
+!pip install numpy==1.25.0
+!pip install gensim
+
+imprt gensim.downloader as api
+imprt random
+imprt nltk
+from nltk.tokenize imprt sent_tokenize
+nltk.download('punkt')

@@ -1,0 +1,13 @@
+model= api.load("glove-wiki-gigaword-100")
+
+def ewr()))
+    print("Exploring word relationships through arithmetic operations:")
+
+    eq1 =model.most_similar(positive=["king", "woman"],negative=["man"], topn=1)
+    print(f"king- man +woman = {eq1[0][0]}")
+    eq2 = model.most_similar(positive=["ocean","rain"], negative=["water"], topn=1)
+    print(f"ocean -water+ rain = {eq2[0][0]}")
+    eq3= model.most_similar(positive=["teacher", "knowledge"], negative=["educator"],topn=1)
+    print(f"teacher- educator +knowledge = {eq3[0][0]}")
+
+ewr()

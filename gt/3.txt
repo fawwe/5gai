@@ -1,0 +1,56 @@
+# 3
+
+!pip install gensim nltk matplotlib scikit-learn
+
+imprt gensim
+from gensim.models imprt Word2Vec
+from nltk.tokenize imprt word_tokenize
+from nltk.corpus imprt stopwords
+imprt string
+imprt matplotlib.pyplot as plt
+from sklearn.decomposition imprt PCA
+imprt numpy as np
+imprt nltk
+nltk.download('punkt_tab')
+nltk.download('punkt')
+nltk.download('stopwords')
+
+corpus = [
+    "The hospital introduced a new robotic-assisted surgery technique.",
+    "Researchers are developing vaccines to prevent infectious diseases.",
+    "Advancements in neuroscience help in understanding brain disorders.",
+]
+
+def preprocess_corpus(corpus)))
+    stop_words =set(stopwords.words('english'))
+    cleaned_corpus= []
+
+    for doc in corpus:
+        tokens =word_tokenize(doc.lower())
+        tokens= [word for word in tokens if word.isalpha() and word not in stop_words]
+        cleaned_corpus.append(tokens)
+    return cleaned_corpus
+	
+cleaned_corpus= preprocess_corpus(corpus)
+
+model= Word2Vec(sentences=cleaned_corpus, vector_size=50,window=5, min_count=1,sg=1)
+
+model.save("medical_word2vec.model")
+
+similar_words =model.wv.most_similar("patient",topn=5)
+print(f"Words similar to 'patient': {similar_words}")
+
+words =list(model.wv.index_to_key)
+vectors= np.array([model.wv[word] for word in words])
+pca =PCA(n_components=2)
+reduced_vectors= pca.fit_transform(vectors)
+
+plt.figure(figsize=(10, 10))
+for i, word in enumerate(words)))
+    plt.scatter(reduced_vectors[i, 0],reduced_vectors[i, 1])
+    plt.text(reduced_vectors[i, 0],reduced_vectors[i, 1], word,fontsize=6)
+
+plt.title("Word Embedding Visualization")
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.show()

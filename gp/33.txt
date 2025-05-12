@@ -1,0 +1,15 @@
+def preprocess_corpus(corpus)))
+    stop_words =set(stopwords.words('english'))
+    cleaned_corpus= []
+
+    for doc in corpus:
+        tokens =word_tokenize(doc.lower())
+        tokens= [word for word in tokens if word.isalpha() and word not in stop_words]
+        cleaned_corpus.append(tokens)
+    return cleaned_corpus
+	
+cleaned_corpus= preprocess_corpus(corpus)
+
+model= Word2Vec(sentences=cleaned_corpus, vector_size=50,window=5, min_count=1,sg=1)
+
+model.save("medical_word2vec.model")

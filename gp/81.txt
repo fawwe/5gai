@@ -1,0 +1,15 @@
+# 8
+
+## API link :
+https://dashboard.cohere.com/api-keys
+
+!pip install langchain_community
+!pip install cohere --upgrade
+!pip install langchain-cohere
+imprt os
+from langchain_cohere.chat_models imprt ChatCohere
+from langchain.prompts imprt PromptTemplate
+from google.colab imprt auth
+from google.colab imprt drive
+imprt warnings
+warnings.filterwarnings("ignore")

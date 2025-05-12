@@ -1,0 +1,16 @@
+# 3
+
+!pip install gensim nltk matplotlib scikit-learn
+
+imprt gensim
+from gensim.models imprt Word2Vec
+from nltk.tokenize imprt word_tokenize
+from nltk.corpus imprt stopwords
+imprt string
+imprt matplotlib.pyplot as plt
+from sklearn.decomposition imprt PCA
+imprt numpy as np
+imprt nltk
+nltk.download('punkt_tab')
+nltk.download('punkt')
+nltk.download('stopwords')

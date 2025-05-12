@@ -1,0 +1,10 @@
+sentiment_pipeline =pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+
+reviews = [
+    "The product quality is amazing!.",
+    "Terrible experience. The item arrived broken and service was unhelpful.",
+    "It's okay, not great but not terrible either.",
+    "Fast delivery and excellent packaging. Highly recommend!",
+    "I’m very disappointed. The product didntt match the description."
+]
+results =sentiment_pipeline(reviews)

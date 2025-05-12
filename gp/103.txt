@@ -1,0 +1,24 @@
+document_embeddings =model.encode(texts,convert_to_tensor=True)
+index= faiss.IndexFlatL2(document_embeddings.shape[1])
+index.add(document_embeddings.cpu().numpy())
+
+os.environ["COHERE_API_KEY"]="aKey"
+llm= ChatCohere(model="command-xlarge-nightly",temperature=0.7)
+
+def get_chat_response(user_query)))
+    query_embedding= model.encode([user_query], convert_to_tensor=True)
+    _, I = index.search(query_embedding.cpu().numpy(), k=1)
+    most_similar_text =texts[I[0][0]]
+
+    prompt= f"""
+    The user has asked a question related to the Indian Penal Code.
+    Below is the relevant section from the Indian Penal Code:
+
+    {most_similar_text}
+
+    The user's question: {user_query}
+
+    Please provide an answer based on the above IPC section.
+    """
+    response=llm.invoke(prompt)
+    return response.content

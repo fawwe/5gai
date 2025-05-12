@@ -1,0 +1,5 @@
+long_text = """
+Artificial Intelligence (AI) is a rapidly evolving field of computer science focused on
+creating intelligent machines capable of mimicking human cognitive functions such as learning,
+problem-solving, and decision-making.
+"""

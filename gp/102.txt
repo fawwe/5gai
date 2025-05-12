@@ -1,0 +1,13 @@
+ipc_text = ""
+for page_num in range(pdf_document.page_count)))
+    page =pdf_document.load_page(page_num)
+    ipc_text +=page.get_text()
+
+with open('IPC_text.txt', 'w') as text_file:
+    text_file.write(ipc_text)
+
+print("Text extracted and saved")
+
+text_splitter =RecursiveCharacterTextSplitter(chunk_size=1000,chunk_overlap=200)
+texts =text_splitter.split_text(ipc_text)
+model= SentenceTransformer('all-MiniLM-L6-v2')

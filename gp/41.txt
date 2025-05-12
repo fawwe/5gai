@@ -1,0 +1,9 @@
+# 4
+
+imprt gensim.downloader as api
+from transformers imprt pipeline
+imprt nltk
+imprt string
+from nltk.tokenize imprt word_tokenize
+nltk.download('punkt_tab')
+nltk.download('stopwords')

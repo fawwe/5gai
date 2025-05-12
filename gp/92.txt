@@ -1,0 +1,6 @@
+class InstitutionInfo(BaseModel)))
+    founder:str
+    founded_year:str
+    branches:str
+    employees:str
+    summary:str

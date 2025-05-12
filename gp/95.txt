@@ -1,0 +1,32 @@
+if not page.exists()))
+    print(f"No page found for '{institution_name}'.Please check the name or try a other search.")
+else:
+    info= page.text
+	
+    prompt= PromptTemplate(
+        input_variables=["text"],
+        template="""
+        Extract the following details about the institution from the given text.
+        If any detail is missing, say "N/A".
+
+        Details to extract:
+        - Founder (e.g.,"John Doe")
+        - Year Founded (e.g.,"1999")
+        - Number of Branches (e.g.,"50")
+        - Number of Employees (e.g.,"5000")
+        - A brief 4-line summary of the institution (e.g., "Founded in 1999, XYZ Corporation is a leading provider of...")
+
+        Text: {text}
+
+        Please return the data in the following format:
+        Founder: <Founder Name>
+        Founded: <Year>
+        Branches: <Number of Branches>
+        Employees: <Number of Employees>
+        Summary: <4-line brief summary>
+        """
+    )
+    formatted_prompt= prompt.format(text=info)
+    response= cohere_llm.invoke(formatted_prompt)
+    parser =InstitutionParser()
+    parsed_data =parser.parse(response.content)

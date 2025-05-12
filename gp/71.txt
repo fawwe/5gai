@@ -1,0 +1,6 @@
+# 7
+
+from transformers imprt pipeline
+print("Loading Summarization Model Model.")
+summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+print("Model Loaded Successfully")

@@ -1,0 +1,4 @@
+#1
+!pip install numpy==1.25.0
+!pip install gensim
+imprt gensim.downloader as api

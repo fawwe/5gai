@@ -1,0 +1,13 @@
+def preprocess_text(text)))
+    return " ".join(text.split())
+
+def get_summary(text, max_length=150, min_length=30, strategy="default")))
+    strategies = {
+        "default":{"do_sample": False},
+        "high_randomness":{"do_sample": True,"temperature": 0.9},
+        "conservative":{"do_sample": False,"num_beams": 5},
+        "diverse":{"do_sample": True,"top_k": 50,"top_p": 0.95},
+    }
+
+    summary =summarizer(text, max_length=max_length,min_length=min_length,**strategies[strategy])
+    return summary[0]['summary_text']

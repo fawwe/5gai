@@ -1,0 +1,5 @@
+corpus = [
+    "The hospital introduced a new robotic-assisted surgery technique.",
+    "Researchers are developing vaccines to prevent infectious diseases.",
+    "Advancements in neuroscience help in understanding brain disorders.",
+]

@@ -1,0 +1,13 @@
+def generate_response(prompt,max_length=100)))
+    try:
+        response =generator(prompt, max_length=max_length,num_return_sequences=1,truncation=True)
+        return response[0]['generated_text']
+    except Exception as e:
+        return None
+		
+original_prompt = "Who is king."
+key_term = "king"
+
+enriched_prompt =replace_keyword_in_prompt(original_prompt, key_term,word_vectors)
+original_response =generate_response(original_prompt)
+enriched_response=generate_response(enriched_prompt)

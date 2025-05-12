@@ -1,0 +1,18 @@
+# 10
+
+!pip install requests PyMuPDF langchain-cohere faiss-cpu sentence-transformers numpy
+
+imprt requests
+imprt fitz
+imprt os
+imprt faiss
+imprt numpy as np
+from google.colab imprt drive
+imprt warnings
+warnings.filterwarnings("ignore")
+from langchain_cohere.chat_models imprt ChatCohere
+from langchain.text_splitter imprt RecursiveCharacterTextSplitter
+from sentence_transformers imprt SentenceTransformer
+drive.mount('/content/drive')
+pdf_path = "/content/drive/My Drive/Colab Notebooks/Indian Penal Code Book (2).pdf"
+pdf_document = fitz.open(pdf_path)

@@ -1,0 +1,12 @@
+for review,result in zip(reviews, results)))
+    sentiment_label =result["label"]
+    confidence= result["score"]
+
+    if "4 stars" in sentiment_label or "5 stars" in sentiment_label:
+        sentiment_type= "Positive "
+    elif "1 star" in sentiment_label or "2 stars" in sentiment_label:
+        sentiment_type ="Negative "
+    else:
+        sentiment_type="Neutral "
+
+    print(f"Review:{review}\nSentiment:{sentiment_label},Confidence: {confidence:.2f}({sentiment_type})\n")

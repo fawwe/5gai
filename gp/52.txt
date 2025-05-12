@@ -1,0 +1,3 @@
+print("Loading pre-trained word vectors")
+word_vectors= api.load("glove-wiki-gigaword-100")
+print("Word vectors loaded successfully")

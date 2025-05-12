@@ -1,0 +1,13 @@
+with open(file_path, "r", encoding="utf-8") as file:
+    text_content =file.read()
+
+prompt_template =PromptTemplate(
+    input_variables=["text"],
+    template="""
+    Given the following document:
+
+    {text}
+
+    Summarize the main points in a clear and concise manner:
+    """
+)

@@ -1,0 +1,17 @@
+similar_words =model.wv.most_similar("patient",topn=5)
+print(f"Words similar to 'patient': {similar_words}")
+
+words =list(model.wv.index_to_key)
+vectors= np.array([model.wv[word] for word in words])
+pca =PCA(n_components=2)
+reduced_vectors= pca.fit_transform(vectors)
+
+plt.figure(figsize=(10, 10))
+for i, word in enumerate(words)))
+    plt.scatter(reduced_vectors[i, 0],reduced_vectors[i, 1])
+    plt.text(reduced_vectors[i, 0],reduced_vectors[i, 1], word,fontsize=6)
+
+plt.title("Word Embedding Visualization")
+plt.xlabel("Principal Component 1")
+plt.ylabel("Principal Component 2")
+plt.show()

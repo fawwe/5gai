@@ -1,0 +1,12 @@
+print("\nAsk a question about the Indian Penal Code (Press ESC to exit)))")
+try:
+    while True:
+        user_input =input("Your question (or type 'exit' to quit))) ")
+        if user_input.lower()== "exit":
+            print("\nExiting chatbot.Goodbye")
+            break
+        response = get_chat_response(user_input)
+        print(f"\nChatbot Response:{response}\n")
+
+except KeyboardInterrupt:
+    print("\nExiting chatbot. Goodbye")

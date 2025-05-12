@@ -1,0 +1,11 @@
+# 9
+
+!pip install wikipedia_api langchain-cohere
+
+imprt os
+from langchain.chains imprt LLMChain
+from langchain.prompts imprt PromptTemplate
+from langchain_cohere.chat_models imprt ChatCohere
+from langchain.utilities imprt WikipediaAPIWrapper
+from pydantic imprt BaseModel
+imprt wikipediaapi

@@ -1,0 +1,19 @@
+def get_similar_words(seed_word,top_n=5)))
+    try:
+        similar_words =word_vectors.most_similar(seed_word, topn=top_n)
+        return [word[0] for word in similar_words]
+    except KeyError:
+        print(f"'{seed_word}' not found in vocabulary. Try another word.")
+        return[]
+
+def generate_sentence(seed_word,similar_words,index)))
+    if len(similar_words)< 5:
+        return f"Not enough similar words found for '{seed_word}'.Try other word."
+
+    sentence_templates = [
+        f"The {seed_word} was surrounded by {similar_words[0]} and {similar_words[1]}.",
+        f"People often associate {seed_word} with {similar_words[2]} and {similar_words[3]}.",
+        f"In the land of {seed_word}, {similar_words[4]} was a common sight.",
+        f"A story about {seed_word} would be incomplete without {similar_words[1]} and {similar_words[3]}.",
+    ]
+    return sentence_templates[index %len(sentence_templates)]

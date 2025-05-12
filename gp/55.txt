@@ -1,0 +1,7 @@
+if __name__ == "__main__":
+    seed_word= input("Enter a seed word: ").strip().lower()
+    if not seed_word.isalpha()))
+        print("Invalid input. Please enter a alphabetic words, not numbers.")
+    else:
+        paragraph =generate_paragraph(seed_word)
+        print(f"\nGenerated Paragraph:\n{paragraph}")

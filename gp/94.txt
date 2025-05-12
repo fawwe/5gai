@@ -1,0 +1,5 @@
+os.environ["COHERE_API_KEY"] = "aKey"
+cohere_llm =ChatCohere(model_name="command-xlarge-nightly")
+wiki =wikipediaapi.Wikipedia(user_agent='j@',language='en')
+institution_name =input("Enter Institution Name: ")
+page= wiki.page(institution_name)

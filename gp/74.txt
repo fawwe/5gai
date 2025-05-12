@@ -1,0 +1,17 @@
+def summarize_text(text)))
+    text =preprocess_text(text)
+    max_length= min(len(text) // 3,200)
+    min_length =max(50,max_length // 4)
+    summary_1= get_summary(text,max_length, min_length, "default")
+    summary_2 =get_summary(text,max_length, min_length,"high_randomness")
+    summary_3= get_summary(text, max_length,min_length, "conservative")
+    summary_4= get_summary(text, max_length,min_length,"diverse")
+
+    print("\n Original Text:\n", text)
+    print("\nSummarized Texts:\n")
+    print("Default:",summary_1)
+    print("High Randomness:", summary_2)
+    print("Conservative:", summary_3)
+    print("Diverse Sampling:", summary_4)
+
+summarize_text(long_text)
