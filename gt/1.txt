@@ -1,0 +1,25 @@
+# nlp1.ipynb
+import re
+import nltk
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('punkt_tab')
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+import unicodedata
+
+def preprocess(text):
+    print("Original Text: ", text)
+
+    token = word_tokenize(text)
+    print("Tokenized Text: ", token)
+
+    stop_words = set(stopwords.words('english'))
+    filtered_stopwords = [word for word in validated_token if word.lower() not in stop_words]
+    print("Filtered Stopwords: ", filtered_stopwords)
+
+text = "The NLP system is analyzing preprocessing tasks "
+
+preprocessed_text = preprocess(text)
+print("Preprocessed Text: ", preprocessed_text)

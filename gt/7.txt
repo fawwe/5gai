@@ -1,0 +1,34 @@
+# nlp6.ipynb
+
+!pip install nltk
+
+import os
+from nltk.corpus import PlaintextCorpusReader
+
+# Create corpus directory structure
+corpus_root = "my_corpus"
+os.makedirs(f"{corpus_root}/science", exist_ok=True)
+os.makedirs(f"{corpus_root}/sports", exist_ok=True)
+
+# Create sample files
+with open(f"{corpus_root}/science/astronomy.txt", "w") as f:
+    f.write("The study of celestial objects and phenomena is called astronomy.")
+with open(f"{corpus_root}/science/biology.txt", "w") as f:
+    f.write("Biology is the science of life and living organisms.")
+
+with open(f"{corpus_root}/sports/football.txt", "w") as f:
+    f.write("Football is a popular team sport played worldwide.")
+with open(f"{corpus_root}/sports/cricket.txt", "w") as f:
+    f.write("Cricket is a bat-and-ball game played between two teams.")
+
+# Load and use the corpus
+corpus = PlaintextCorpusReader(corpus_root, ".*\.txt")
+
+# (i) List categories
+categories = [subdir for subdir in os.listdir(corpus_root) 
+             if os.path.isdir(f"{corpus_root}/{subdir}")]
+print("Categories:", categories)
+
+# (ii) First 10 words from science category
+science_words = corpus.words("science/astronomy.txt")[:10]
+print("First 10 science words:", science_words)

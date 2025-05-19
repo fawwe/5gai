@@ -1,0 +1,40 @@
+#nlp 5
+
+from collections import defaultdict
+import math
+
+docs = [
+    (["mild", "headache", "slight", "fatigue"], "Negative"),
+    (["minor", "cough", "occasional", "sneezing"], "Negative"),
+    (["temporary", "dizziness", "no", "fever"], "Negative"),
+    (["severe", "headache", "high", "fever"], "Positive"),
+    (["extreme", "fatigue", "persistent", "chest", "pain"], "Positive")
+]
+
+test = ["high", "fever", "extreme", "fatigue"]
+
+word_counts = defaultdict(lambda: defaultdict(int))
+class_counts = defaultdict(int)
+vocab = set()
+
+for words, cls in docs:
+    class_counts[cls] += 1
+    for word in words:
+        word_counts[cls][word] += 1
+        vocab.add(word)
+
+# Calculate probabilities
+def class_prob(cls, words):
+    total_words = sum(word_counts[cls].values())
+    prob = math.log(class_counts[cls] / len(docs))
+    for word in words:
+        count = word_counts[cls][word] + 1  # Laplace smoothing
+        prob += math.log(count / (total_words + len(vocab)))
+    return prob
+
+# Predict
+probs = {cls: class_prob(cls, test) for cls in class_counts}
+predicted = max(probs, key=probs.get)
+
+print(f"Comedy: {probs['comedy']:.2f}, Action: {probs['action']:.2f}")
+print(f"Predicted: {predicted}")

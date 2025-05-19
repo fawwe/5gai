@@ -1,0 +1,29 @@
+# nlp4.ipynb
+
+import nltk
+grammar=nltk.CFG.fromstring("""
+    S -> NP VP
+    NP ->Det N
+    VP ->V NP
+    Det ->'the'
+    N ->'cat'| 'dog'
+    V ->'chased'| 'caught'
+""")
+input_sentence="the cat chased the dog"
+tokens=input_sentence.split()
+print("Top-Down Parsing")
+top_down_parser=nltk.RecursiveDescentParser(grammar)
+for tree in top_down_parser.parse(tokens):
+    print(tree)
+    tree.pretty_print()
+    break
+else:
+    print("parsing failed: Sentence is not valid.")
+print("\nBottom-Up Parsing (Shift-Reduce):")
+sr_parser=nltk.ShiftReduceParser(grammar)
+for tree in sr_parser.parse(tokens):
+    print(tree)
+    tree.pretty_print()
+    break
+else:
+    print("Parsing failed: Sentence is not valid.")
