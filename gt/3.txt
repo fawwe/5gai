@@ -1,56 +1,107 @@
-# 3
+!pip install tensorflow matplotlib
 
-!pip install gensim nltk matplotlib scikit-learn
+import tensorflow as tf
+import keras
+import os
+import numpy as np
+import matplotlib.pyplot as plt
 
-imprt gensim
-from gensim.models imprt Word2Vec
-from nltk.tokenize imprt word_tokenize
-from nltk.corpus imprt stopwords
-imprt string
-imprt matplotlib.pyplot as plt
-from sklearn.decomposition imprt PCA
-imprt numpy as np
-imprt nltk
-nltk.download('punkt_tab')
-nltk.download('punkt')
-nltk.download('stopwords')
+import kagglehub
 
-corpus = [
-    "The hospital introduced a new robotic-assisted surgery technique.",
-    "Researchers are developing vaccines to prevent infectious diseases.",
-    "Advancements in neuroscience help in understanding brain disorders.",
-]
+# Download latest version
+path = kagglehub.dataset_download("tongpython/cat-and-dog")
 
-def preprocess_corpus(corpus)))
-    stop_words =set(stopwords.words('english'))
-    cleaned_corpus= []
+print("Path to dataset files:", path)
 
-    for doc in corpus:
-        tokens =word_tokenize(doc.lower())
-        tokens= [word for word in tokens if word.isalpha() and word not in stop_words]
-        cleaned_corpus.append(tokens)
-    return cleaned_corpus
-	
-cleaned_corpus= preprocess_corpus(corpus)
+# Define the paths to the image directories
+data_dir = '/kaggle/input/cat-and-dog/'
+train_dir = os.path.join(data_dir, 'training_set/training_set')
+test_dir = os.path.join(data_dir, 'test_set/test_set')
 
-model= Word2Vec(sentences=cleaned_corpus, vector_size=50,window=5, min_count=1,sg=1)
+# Define image size and batch size
+img_height = 128
+img_width = 128
+batch_size = 32
 
-model.save("medical_word2vec.model")
+# Load the training and validation datasets
+train_ds = tf.keras.utils.image_dataset_from_directory(
+    train_dir,
+    labels='inferred',
+    label_mode='int',
+    image_size=(img_height, img_width),
+    interpolation='nearest',
+    batch_size=batch_size)
 
-similar_words =model.wv.most_similar("patient",topn=5)
-print(f"Words similar to 'patient': {similar_words}")
+test_ds = tf.keras.utils.image_dataset_from_directory(
+    test_dir,
+    labels='inferred',
+    label_mode='int',
+    image_size=(img_height, img_width),
+    interpolation='nearest',
+    batch_size=batch_size)
 
-words =list(model.wv.index_to_key)
-vectors= np.array([model.wv[word] for word in words])
-pca =PCA(n_components=2)
-reduced_vectors= pca.fit_transform(vectors)
+# Verify class names
+print(train_ds.class_names)
+print(test_ds.class_names)
 
-plt.figure(figsize=(10, 10))
-for i, word in enumerate(words)))
-    plt.scatter(reduced_vectors[i, 0],reduced_vectors[i, 1])
-    plt.text(reduced_vectors[i, 0],reduced_vectors[i, 1], word,fontsize=6)
+model = keras.Sequential([
+  keras.Input(shape=(img_height, img_width, 3)), # Use Input layer for specifying input shape
 
-plt.title("Word Embedding Visualization")
-plt.xlabel("Principal Component 1")
-plt.ylabel("Principal Component 2")
+  # Block 1
+  keras.layers.Conv2D(32, (3,3), padding='same', use_bias=False, ),
+  keras.layers.BatchNormalization(),
+  keras.layers.Activation('relu'),
+  keras.layers.MaxPooling2D(2,2),
+
+  # Block 2
+  keras.layers.Conv2D(64, (3,3), padding='same', use_bias=False),
+  keras.layers.BatchNormalization(),
+  keras.layers.Activation('relu'),
+  keras.layers.MaxPooling2D(2,2),
+
+  # Block 3
+  keras.layers.Conv2D(128, (3,3), padding='same', use_bias=False),
+  keras.layers.BatchNormalization(),
+  keras.layers.Activation('relu'),
+  keras.layers.MaxPooling2D(2,2),
+  keras.layers.Dropout(0.3),
+
+  # Block 4
+  keras.layers.Conv2D(256, (3,3), padding='same', use_bias=False),
+  keras.layers.BatchNormalization(),
+  keras.layers.Activation('relu'),
+  keras.layers.MaxPooling2D(2,2),
+  keras.layers.Dropout(0.3),
+
+  # Flatten + FC
+  keras.layers.Flatten(),
+  keras.layers.Dense(256, use_bias=False),
+  keras.layers.BatchNormalization(),
+  keras.layers.Activation('relu'),
+  keras.layers.Dropout(0.5),
+
+  # Output layer (binary classification)
+  keras.layers.Dense(1, activation='sigmoid')
+])
+
+model.summary()
+
+model.compile(
+    optimizer='adam',
+    loss="binary_crossentropy",
+    metrics=['accuracy']
+)
+
+history = model.fit(
+    train_ds,
+    validation_data=test_ds,
+    epochs=15
+)
+
+model.save("/content/drive/MyDrive/Colab Notebooks/CatDog_15Epoch.keras")
+
+import pandas as pd
+history_df = pd.DataFrame(history.history)
+history_df.loc[:, ['loss', 'val_loss']].plot()
+history_df.loc[:, ['accuracy', 'val_accuracy']].plot()
 plt.show()

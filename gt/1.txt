@@ -1,18 +1,12 @@
-#1
-!pip install numpy==1.25.0
 !pip install gensim
-imprt gensim.downloader as api
-
-model= api.load("glove-wiki-gigaword-100")
-
-def ewr()))
-    print("Exploring word relationships through arithmetic operations:")
-
-    eq1 =model.most_similar(positive=["king", "woman"],negative=["man"], topn=1)
-    print(f"king- man +woman = {eq1[0][0]}")
-    eq2 = model.most_similar(positive=["ocean","rain"], negative=["water"], topn=1)
-    print(f"ocean -water+ rain = {eq2[0][0]}")
-    eq3= model.most_similar(positive=["teacher", "knowledge"], negative=["educator"],topn=1)
-    print(f"teacher- educator +knowledge = {eq3[0][0]}")
-
-ewr()
+from gensim.models import Word2Vec
+corpus = [
+    "The king and queen ruled the kingdom.",
+    "A man and a woman are walking in the rain.",
+    "Teachers share knowledge with their students."
+]
+tokenized = [s.lower().split() for s in corpus]
+model = Word2Vec(tokenized, vector_size=50, window=3, min_count=1, sg=1, epochs=100)
+print("\nWord Embeddings (sample values):\n")
+for w in model.wv.index_to_key:
+    print(f"{w}: {model.wv[w][:1]}")

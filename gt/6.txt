@@ -1,32 +1,42 @@
-# 6
 
-from transformers imprt AutoModelForSequenceClassification, AutoTokenizer, pipeline
-imprt torch
+import numpy as np, pandas as pd
+import yfinance as yf
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
 
-model_name= "nlptown/bert-base-multilingual-uncased-sentiment"
-tokenizer =AutoTokenizer.from_pretrained(model_name)
-model =AutoModelForSequenceClassification.from_pretrained(model_name)
+# Download stock market data
+data = yf.download('AAPL', start='2023-01-01', end='2024-01-01')
+prices = data['Close'].values.reshape(-1,1)
+scaler = MinMaxScaler()
+scaled = scaler.fit_transform(prices)
 
-sentiment_pipeline =pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+# Prepare dataset
+def create_data(s, steps=20):
+    X, y = [], []
+    for i in range(len(s)-steps):
+        X.append(s[i:i+steps,0])
+        y.append(s[i+steps,0])
+    return np.array(X), np.array(y)
+steps = 20
+X, y = create_data(scaled, steps)
+X = X.reshape((-1, steps, 1))
 
-reviews = [
-    "The product quality is amazing!.",
-    "Terrible experience. The item arrived broken and service was unhelpful.",
-    "It's okay, not great but not terrible either.",
-    "Fast delivery and excellent packaging. Highly recommend!",
-    "I’m very disappointed. The product didntt match the description."
-]
-results =sentiment_pipeline(reviews)
+# Build and train LSTM
+model = Sequential([LSTM(32, input_shape=(steps,1)), Dense(1)])
+model.compile(optimizer='adam', loss='mse')
+model.fit(X, y, epochs=20, batch_size=8, verbose=0)
 
-for review,result in zip(reviews, results)))
-    sentiment_label =result["label"]
-    confidence= result["score"]
-
-    if "4 stars" in sentiment_label or "5 stars" in sentiment_label:
-        sentiment_type= "Positive "
-    elif "1 star" in sentiment_label or "2 stars" in sentiment_label:
-        sentiment_type ="Negative "
-    else:
-        sentiment_type="Neutral "
-
-    print(f"Review:{review}\nSentiment:{sentiment_label},Confidence: {confidence:.2f}({sentiment_type})\n")
+# Predict and plot
+pred_scaled = model.predict(X)
+pred = scaler.inverse_transform(pred_scaled)
+plt.figure(figsize=(8,4))
+plt.plot(prices[steps:], label='True')
+plt.plot(pred, label='Predicted')
+plt.title('AAPL Price Forecast')
+plt.xlabel('Time Step')
+plt.ylabel('Price')
+plt.legend()
+plt.tight_layout()
+plt.show()

@@ -1,40 +1,33 @@
-# 8
 
-## API link :
-https://dashboard.cohere.com/api-keys
+from collections import deque
 
-!pip install langchain_community
-!pip install cohere --upgrade
-!pip install langchain-cohere
-imprt os
-from langchain_cohere.chat_models imprt ChatCohere
-from langchain.prompts imprt PromptTemplate
-from google.colab imprt auth
-from google.colab imprt drive
-imprt warnings
-warnings.filterwarnings("ignore")
+g = [["X",".",".",".","."],
+     [".","X","X","G","."],
+     [".",".",".","X","."],
+     ["S",".",".",".","."]]
 
-os.environ["COHERE_API_KEY"] = "aKey"
-drive.mount('/content/drive')
-file_path = "/content/drive/My Drive/Colab Notebooks/document.txt"
+start, goal = (3,0), (1,3)
+R,C = len(g), len(g[0])
+dirs = {"up":(-1,0),"down":(1,0),"left":(0,-1),"right":(0,1)}
 
-with open(file_path, "r", encoding="utf-8") as file:
-    text_content =file.read()
+q, parent = deque([start]), {start: None}
+while q:
+    r,c = q.popleft()
+    if (r,c)==goal: break
+    for a,(dr,dc) in dirs.items():
+        nr,nc = r+dr,c+dc
+        if 0<=nr<R and 0<=nc<C and g[nr][nc]!="X" and (nr,nc) not in parent:
+            parent[(nr,nc)] = ((r,c),a)
+            q.append((nr,nc))
 
-prompt_template =PromptTemplate(
-    input_variables=["text"],
-    template="""
-    Given the following document:
+if goal not in parent:
+    print("No path exists!")
+else:
+    path, cur = [], goal
+    while parent[cur]: cur,act = parent[cur]; path.append(act)
+    path.reverse()
+    print("Path:", path)
 
-    {text}
+    pos = start
+    for a in path: pos = (pos[0]+dirs[a][0], pos[1]+dirs[a][1]); print(pos)
 
-    Summarize the main points in a clear and concise manner:
-    """
-)
-
-cohere_llm =ChatCohere(model_name="command-xlarge-nightly")
-formatted_prompt =prompt_template.format(text=text_content)
-response =cohere_llm.invoke(formatted_prompt)
-
-print("\nGenerated Summary:")
-print(response.content)

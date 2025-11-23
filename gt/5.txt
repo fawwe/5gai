@@ -1,52 +1,70 @@
-# 5
 
-!pip install numpy==1.25.0
-!pip install gensim
+import tensorflow as tf
+from tensorflow import keras
+import numpy as np
+import matplotlib.pyplot as plt
 
-imprt gensim.downloader as api
-imprt random
-imprt nltk
-from nltk.tokenize imprt sent_tokenize
-nltk.download('punkt')
+vocab_size = 10000
+maxlen = 200
+(x_train, y_train), (x_test, y_test)= keras.datasets.imdb.load_data(num_words=vocab_size)
 
+x_train=keras.preprocessing.sequence.pad_sequences(x_train, maxlen=maxlen)
+x_test=keras.preprocessing.sequence.pad_sequences(x_test, maxlen=maxlen)
+print (f" Training samples: {len(x_train)}")
+print(f"Testing samples: {len(x_test)}")
 
-print("Loading pre-trained word vectors")
-word_vectors= api.load("glove-wiki-gigaword-100")
-print("Word vectors loaded successfully")
+model=keras.Sequential([
+    keras.layers.Embedding(input_dim=vocab_size, output_dim=64, input_length=maxlen),
+    keras.layers.LSTM(128),
+    keras.layers.Dense(64, activation='relu'),
+    keras.layers.Dense(1, activation='sigmoid')
+])
 
+model.compile(
+    optimizer='adam',
+    loss='binary_crossentropy',
+    metrics=['accuracy']
+)
+model.build(input_shape=(None, maxlen))
+model.summary()
 
+history=model.fit(
+    x_train, y_train,
+    epochs=10,
+    batch_size=128,
+    validation_split=0.2,
+    verbose=1
+)
 
-def get_similar_words(seed_word,top_n=5)))
-    try:
-        similar_words =word_vectors.most_similar(seed_word, topn=top_n)
-        return [word[0] for word in similar_words]
-    except KeyError:
-        print(f"'{seed_word}' not found in vocabulary. Try another word.")
-        return[]
+model.save("TextDoc_Classification_model_1.keras")
 
-def generate_sentence(seed_word,similar_words,index)))
-    if len(similar_words)< 5:
-        return f"Not enough similar words found for '{seed_word}'.Try other word."
+test_loss, test_acc=model.evaluate(x_test, y_test, verbose=1)
+print(f"Test accuracy: {test_acc:.3f}")
 
-    sentence_templates = [
-        f"The {seed_word} was surrounded by {similar_words[0]} and {similar_words[1]}.",
-        f"People often associate {seed_word} with {similar_words[2]} and {similar_words[3]}.",
-        f"In the land of {seed_word}, {similar_words[4]} was a common sight.",
-        f"A story about {seed_word} would be incomplete without {similar_words[1]} and {similar_words[3]}.",
-    ]
-    return sentence_templates[index %len(sentence_templates)]
+import matplotlib.pyplot as plt
+plt.plot(history.history['accuracy'], label='Train Accuracy')
+plt.plot(history.history['val_accuracy'], label = 'Validation Accuracy')
+plt.title('Training & Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
 
-def generate_paragraph(seed_word)))
-    similar_words= get_similar_words(seed_word, top_n=5)
-    if not similar_words:
-        return "Could not generate. Try other seed word."
-    paragraph =[generate_sentence(seed_word, similar_words, i) for i in range(4)]
-    return " ".join(paragraph)
+word_index = keras.datasets.imdb.get_word_index()
 
-if __name__ == "__main__":
-    seed_word= input("Enter a seed word: ").strip().lower()
-    if not seed_word.isalpha()))
-        print("Invalid input. Please enter a alphabetic words, not numbers.")
-    else:
-        paragraph =generate_paragraph(seed_word)
-        print(f"\nGenerated Paragraph:\n{paragraph}")
+def encode_text(text):
+    # Convert words to integers using the word index
+    tokens = [word_index.get(word.lower(), 2) for word in text.split()] # 2 is for unknown words
+    return keras.preprocessing.sequence.pad_sequences([tokens], maxlen=maxlen)
+
+sample_reviews = [
+    "This movie was fantastic! I loved the acting and the story.",
+    "Terrible film. Waste of time and money.",
+    "It was ok, not great but can be watched not even once.",
+]
+
+for review in sample_reviews:
+    encoded = encode_text(review)
+    prediction = model.predict(encoded)[0][0]
+    sentiment = "Positive" if prediction > 0.5 else "Negative"
+    print(f"Review: {review}\nPredicted Sentiment: {sentiment} (Score: {prediction:.2f})\n")

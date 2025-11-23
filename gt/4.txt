@@ -1,55 +1,55 @@
-# 4
 
-imprt gensim.downloader as api
-from transformers imprt pipeline
-imprt nltk
-imprt string
-from nltk.tokenize imprt word_tokenize
-nltk.download('punkt_tab')
-nltk.download('stopwords')
+!pip install tensorflow
 
-word_vectors =api.load("glove-wiki-gigaword-100")
+import tensorflow as tf
+from tensorflow.keras import layers , models
+import matplotlib.pyplot as plt
 
-def replace_keyword_in_prompt(prompt,keyword, word_vectors,topn=1)))
-    words= word_tokenize(prompt)
-    enriched_words= []
+(X_train, _) , (X_test , _) = tf.keras.datasets.mnist.load_data()
 
-    for word in words:
-        cleaned_word =word.lower().strip(string.punctuation)
-        if cleaned_word== keyword.lower()))
-            try:
-                similar_words =word_vectors.most_similar(cleaned_word,topn=topn)
-                replacement_word= similar_words[0][0]
-                enriched_words.append(replacement_word)
-                continue
-            except KeyError:
-                pass
-        enriched_words.append(word)
-    return " ".join(enriched_words)
+X_train = X_train.astype('float32')/255.
+X_test = X_test.astype('float32')/255.
+X_train = X_train[..., tf.newaxis]
+X_test = X_test[..., tf.newaxis]
 
-generator =pipeline("text-generation", model="gpt2")
+def build_autoencoder_model():
+  encoder_input = layers.Input(shape=(28,28,1))
+  X = layers.Conv2D(16,(3,3), padding='same', strides=2)(encoder_input)
+  X = layers.BatchNormalization()(X)
+  X = layers.Activation('relu')(X)
+  encoder_output = layers.Conv2D(2,(3,3), activation='relu', padding='same', strides=2)(X)
 
-def generate_response(prompt,max_length=100)))
-    try:
-        response =generator(prompt, max_length=max_length,num_return_sequences=1,truncation=True)
-        return response[0]['generated_text']
-    except Exception as e:
-        return None
 
-original_prompt = "Who is king."
-key_term = "king"
+  X = layers.Conv2DTranspose(16,(3,3), padding='same', strides=2)(encoder_output)
+  X = layers.BatchNormalization()(X)
+  X = layers.Activation('relu')(X)
+  decoder_output = layers.Conv2DTranspose(1,(3,3), activation='sigmoid', padding='same', strides=2)(X)
 
-enriched_prompt =replace_keyword_in_prompt(original_prompt, key_term,word_vectors)
-original_response =generate_response(original_prompt)
-enriched_response=generate_response(enriched_prompt)
+  model = tf.keras.models.Model(encoder_input, decoder_output)
+  return model
 
-print(f"\nOriginal Prompt:{original_prompt}")
-print(f"\nEnriched Prompt:{enriched_prompt}")
-print("\nOriginal PromptResponse:")
-print(original_response)
-print("\nEnriched Prompt Response:")
-print(enriched_response)
-print("\nResponse Length Comparison:")
-print(f"Original:{len(original_response)},Enriched:{len(enriched_response)}")
-print("\nSentence Count Comparison:")
-print(f"Original:{original_response.count('.')},Enriched:{enriched_response.count('.')}")
+
+model = build_autoencoder_model()
+model.summary()
+
+model.compile(optimizer='adam',loss='binary_crossentropy', metrics=["accuracy"])
+model.fit(X_train, X_train, epochs=5, batch_size=128,shuffle = True,  validation_data=(X_test, X_test))
+
+def display_reconstruction(original, reconstructed):
+  plt.figure(figsize=(10,4))
+  img_count = test_samples.shape[0]
+  for i in range(img_count):
+    plt.subplot(2,img_count,i+1)
+    plt.imshow(original[i].squeeze(), cmap='gray')
+    plt.axis('off')
+
+    plt.subplot(2,img_count,img_count+i+1)
+    plt.imshow(reconstructed[i].squeeze(), cmap='gray')
+    plt.axis('off')
+  plt.suptitle("Top: original | Bottom : Reconstructed")
+  plt.show()
+
+test_samples = X_test[:15]
+reconstructed_samples = model.predict(test_samples)
+display_reconstruction(test_samples, reconstructed_samples)
+

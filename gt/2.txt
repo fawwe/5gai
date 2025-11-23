@@ -1,72 +1,111 @@
-# 2
 
-imprt gensim.downloader as api
-imprt matplotlib.pyplot as plt
-from sklearn.decomposition imprt PCA
-imprt numpy as np
+!pip install tensorflow matplotlib
 
-model= api.load("glove-wiki-gigaword-50")
+from tensorflow import keras
+from tensorflow.keras import layers
 
-def visualize_embeddings(words)))
-    valid_words =[word for word in words if word in model.key_to_index]
+(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
 
-    if not valid_words:
-        print("No valid words in the model.")
-        return
+# Check size of each set
+print("Train X:", x_train.shape)
+print("Train Y:", y_train.shape)
+print("Test X:", x_test.shape)
+print("Test Y:", y_test.shape)
 
-    vectors =np.array([model[word] for word in valid_words])
-    pca =PCA(n_components=2)
-    reduced_vectors =pca.fit_transform(vectors)
+# Verify random sample
+import matplotlib.pyplot as plt
+sampleNo = 1002
+plt.imshow(x_train[sampleNo], cmap='gray', )
+print("Ground Truth Value:", y_train[sampleNo])
 
-    plt.figure(figsize=(10, 6))
+x_train = x_train.astype("float32") / 255.0
+x_test = x_test.astype("float32") / 255.0
 
-    for i, word in enumerate(valid_words)))
-        plt.scatter(reduced_vectors[i, 0],reduced_vectors[i, 1], label=word)
-        plt.text(reduced_vectors[i, 0] + 0.02, reduced_vectors[i, 1] + 0.02,word,fontsize=12)
+x_train = x_train.reshape((-1, 28 * 28))
+x_test = x_test.reshape((-1, 28 * 28))
+# Verify shape
+print(x_train.shape) # should be 60000x784
+print(x_test.shape) # should be 10000x784
 
-    plt.title("Word Embedding Visualization")
-    plt.xlabel("Principal Component 1")
-    plt.ylabel("Principal Component 2")
-    plt.legend()
-    plt.show()
+model = keras.Sequential([
+keras.layers.Input((28 * 28,)),
+keras.layers.Dense(512, activation="relu"),
+keras.layers.Dense(256, activation="relu"),
+keras.layers.Dense(128, activation="relu"),
+keras.layers.Dense(10, activation="softmax")
+])
 
-words_to_visualize = ["king","queen","man","woman", "teacher","student", "ocean","rain", "water","knowledge"]
+model.compile(
+optimizer="adam",
+loss="sparse_categorical_crossentropy",
+metrics=["accuracy"]
+)
 
-visualize_embeddings(words_to_visualize)
+history = model.fit(x_train, y_train, batch_size=32, validation_split=0.1, epochs=2)
 
+import pandas as pd
+history_df = pd.DataFrame(history.history)
+history_df.loc[:, ['loss', 'val_loss']].plot()
+history_df.loc[:, ['accuracy', 'val_accuracy']].plot()
+plt.show()
 
-imprt gensim.downloader as api
-imprt matplotlib.pyplot as plt
-from sklearn.decomposition imprt PCA
-imprt numpy as np
+import numpy as np
+y_pred_prob = model.predict(x_test[:5])
+y_pred_classes = np.argmax(y_pred_prob, axis=1)
+print("Predicted", y_pred_classes)
+print("Ground Truth Value::", y_test[:5])
 
-model =api.load("glove-wiki-gigaword-50")
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f"Test accuracy: {test_acc:.4f}")
 
-def visualize_embeddings()))
-    words = ["AI", "data", "algorithm","technology","science","automation","machine"]
-    valid_words = [word for word in words if word in model]
-	
-    vectors =np.array([model[word] for word in valid_words])
-    pca =PCA(n_components=2)
-    reduced_vectors= pca.fit_transform(vectors)
+from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
 
-    plt.figure(figsize=(10, 6))
-    
-	for i, word in enumerate(valid_words)))
-        plt.scatter(reduced_vectors[i, 0],reduced_vectors[i, 1])
-        plt.text(reduced_vectors[i, 0] + 0.02, reduced_vectors[i, 1] + 0.02, word,fontsize=12)
+# Get predictions for the entire test set
+y_predicted = model.predict(x_test)  # Should be shape (num_samples, num_classes)
+y_predicted_classes = np.argmax(y_predicted, axis=1)  # Shape (num_samples,)
 
-    plt.title("Word Embedding Visualization using PCA")
-    plt.xlabel("Principal Component 1")
-    plt.ylabel("Principal Component 2")
-    plt.show()
+# Check shapes
+print("y_test shape:", y_test.shape)
+print("y_predicted_classes shape:", y_predicted_classes.shape)
 
-def find_similar_words(word)))
-    similar_words =model.most_similar(word, topn=5)
-    print(f"Words similar to'{word}':")
-    for similar_word, score in similar_words:
-        print(f"{similar_word}(score: {score:.4f})")
+# Generate confusion matrix
+cm = confusion_matrix(y_test, y_predicted_classes)
 
-word = input()
-visualize_embeddings()
-find_similar_words(word)
+# Plot confusion matrix
+plt.figure(figsize=(10, 8))
+seaborn.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+plt.xlabel("Predicted")
+plt.ylabel("True")
+plt.title("Confusion Matrix")
+plt.show()
+
+from sklearn.metrics import precision_recall_curve, auc
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import label_binarize
+# Binarize the output labels for multiclass
+y_test_bin = label_binarize(y_test, classes=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+# Get prediction probabilities for the entire test set
+y_predicted = model.predict(x_test)
+# For each class
+precision = dict()
+recall = dict()
+average_precision = dict()
+for i in range(10):
+    precision[i], recall[i], _ = precision_recall_curve(y_test_bin[:, i], y_predicted[:, i])
+    average_precision[i] = auc(recall[i], precision[i])
+# Plot Precision-Recall curve for each class
+plt.figure(figsize=(10, 8))
+for i in range(10):
+    plt.plot(recall[i], precision[i], lw=2, label='Class {0} (AP = {1:0.2f})'.format(i, average_precision[i]))
+plt.xlabel("Recall")
+plt.ylabel("Precision")
+plt.title("Precision-Recall Curve per Class")
+plt.legend(loc="lower left")
+plt.show()
+
+from sklearn.metrics import f1_score
+f1score = f1_score(y_test, y_predicted_classes, average='weighted')
+print(f"F1 Score: {f1score:.4f}")
