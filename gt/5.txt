@@ -1,17 +1,28 @@
 
 import tensorflow as tf
+
 from tensorflow import keras
+
 import numpy as np
+
 import matplotlib.pyplot as plt
 
+
 vocab_size = 10000
+
 maxlen = 200
+
 (x_train, y_train), (x_test, y_test)= keras.datasets.imdb.load_data(num_words=vocab_size)
 
+
 x_train=keras.preprocessing.sequence.pad_sequences(x_train, maxlen=maxlen)
+
 x_test=keras.preprocessing.sequence.pad_sequences(x_test, maxlen=maxlen)
+
 print (f" Training samples: {len(x_train)}")
+
 print(f"Testing samples: {len(x_test)}")
+
 
 model=keras.Sequential([
     keras.layers.Embedding(input_dim=vocab_size, output_dim=64, input_length=maxlen),
@@ -20,13 +31,17 @@ model=keras.Sequential([
     keras.layers.Dense(1, activation='sigmoid')
 ])
 
+
 model.compile(
     optimizer='adam',
     loss='binary_crossentropy',
     metrics=['accuracy']
 )
+
 model.build(input_shape=(None, maxlen))
+
 model.summary()
+
 
 history=model.fit(
     x_train, y_train,
@@ -36,26 +51,42 @@ history=model.fit(
     verbose=1
 )
 
+
 model.save("TextDoc_Classification_model_1.keras")
 
+
 test_loss, test_acc=model.evaluate(x_test, y_test, verbose=1)
+
 print(f"Test accuracy: {test_acc:.3f}")
 
+
 import matplotlib.pyplot as plt
+
 plt.plot(history.history['accuracy'], label='Train Accuracy')
+
 plt.plot(history.history['val_accuracy'], label = 'Validation Accuracy')
+
 plt.title('Training & Validation Accuracy')
+
 plt.xlabel('Epochs')
+
 plt.ylabel('Accuracy')
+
 plt.legend()
+
 plt.show()
+
 
 word_index = keras.datasets.imdb.get_word_index()
 
+
 def encode_text(text):
-    # Convert words to integers using the word index
-    tokens = [word_index.get(word.lower(), 2) for word in text.split()] # 2 is for unknown words
+
+
+    tokens = [word_index.get(word.lower(), 2) for word in text.split()]                         
+
     return keras.preprocessing.sequence.pad_sequences([tokens], maxlen=maxlen)
+
 
 sample_reviews = [
     "This movie was fantastic! I loved the acting and the story.",
@@ -63,8 +94,14 @@ sample_reviews = [
     "It was ok, not great but can be watched not even once.",
 ]
 
+
 for review in sample_reviews:
+
     encoded = encode_text(review)
+
     prediction = model.predict(encoded)[0][0]
+
     sentiment = "Positive" if prediction > 0.5 else "Negative"
+
     print(f"Review: {review}\nPredicted Sentiment: {sentiment} (Score: {prediction:.2f})\n")
+

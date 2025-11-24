@@ -1,55 +1,95 @@
 
 !pip install tensorflow
 
+
 import tensorflow as tf
+
 from tensorflow.keras import layers , models
+
 import matplotlib.pyplot as plt
+
 
 (X_train, _) , (X_test , _) = tf.keras.datasets.mnist.load_data()
 
+
 X_train = X_train.astype('float32')/255.
+
 X_test = X_test.astype('float32')/255.
+
 X_train = X_train[..., tf.newaxis]
+
 X_test = X_test[..., tf.newaxis]
 
+
 def build_autoencoder_model():
+
   encoder_input = layers.Input(shape=(28,28,1))
+
   X = layers.Conv2D(16,(3,3), padding='same', strides=2)(encoder_input)
+
   X = layers.BatchNormalization()(X)
+
   X = layers.Activation('relu')(X)
+
   encoder_output = layers.Conv2D(2,(3,3), activation='relu', padding='same', strides=2)(X)
 
 
+
   X = layers.Conv2DTranspose(16,(3,3), padding='same', strides=2)(encoder_output)
+
   X = layers.BatchNormalization()(X)
+
   X = layers.Activation('relu')(X)
+
   decoder_output = layers.Conv2DTranspose(1,(3,3), activation='sigmoid', padding='same', strides=2)(X)
 
+
   model = tf.keras.models.Model(encoder_input, decoder_output)
+
   return model
 
 
+
 model = build_autoencoder_model()
+
 model.summary()
 
+
 model.compile(optimizer='adam',loss='binary_crossentropy', metrics=["accuracy"])
+
 model.fit(X_train, X_train, epochs=5, batch_size=128,shuffle = True,  validation_data=(X_test, X_test))
 
+
 def display_reconstruction(original, reconstructed):
+
   plt.figure(figsize=(10,4))
+
   img_count = test_samples.shape[0]
+
   for i in range(img_count):
+
     plt.subplot(2,img_count,i+1)
+
     plt.imshow(original[i].squeeze(), cmap='gray')
+
     plt.axis('off')
+
 
     plt.subplot(2,img_count,img_count+i+1)
+
     plt.imshow(reconstructed[i].squeeze(), cmap='gray')
+
     plt.axis('off')
+
   plt.suptitle("Top: original | Bottom : Reconstructed")
+
   plt.show()
 
+
 test_samples = X_test[:15]
+
 reconstructed_samples = model.predict(test_samples)
+
 display_reconstruction(test_samples, reconstructed_samples)
+
 
