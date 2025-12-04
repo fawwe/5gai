@@ -1,181 +1,43 @@
-
-!pip install tensorflow matplotlib
-
-
-from tensorflow import keras
-
-from tensorflow.keras import layers
-
-
-(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
-
-
-
-print("Train X:", x_train.shape)
-
-print("Train Y:", y_train.shape)
-
-print("Test X:", x_test.shape)
-
-print("Test Y:", y_test.shape)
-
-
-
-import matplotlib.pyplot as plt
-
-sampleNo = 1002
-
-plt.imshow(x_train[sampleNo], cmap='gray', )
-
-print("Ground Truth Value:", y_train[sampleNo])
-
-
-x_train = x_train.astype("float32") / 255.0
-
-x_test = x_test.astype("float32") / 255.0
-
-
-x_train = x_train.reshape((-1, 28 * 28))
-
-x_test = x_test.reshape((-1, 28 * 28))
-
-
-print(x_train.shape)                      
-
-print(x_test.shape)                      
-
-
-model = keras.Sequential([
-keras.layers.Input((28 * 28,)),
-keras.layers.Dense(512, activation="relu"),
-keras.layers.Dense(256, activation="relu"),
-keras.layers.Dense(128, activation="relu"),
-keras.layers.Dense(10, activation="softmax")
-])
-
-
-model.compile(
-optimizer="adam",
-loss="sparse_categorical_crossentropy",
-metrics=["accuracy"]
-)
-
-
-history = model.fit(x_train, y_train, batch_size=32, validation_split=0.1, epochs=2)
-
-
-import pandas as pd
-
-history_df = pd.DataFrame(history.history)
-
-history_df.loc[:, ['loss', 'val_loss']].plot()
-
-history_df.loc[:, ['accuracy', 'val_accuracy']].plot()
-
-plt.show()
-
-
-import numpy as np
-
-y_pred_prob = model.predict(x_test[:5])
-
-y_pred_classes = np.argmax(y_pred_prob, axis=1)
-
-print("Predicted", y_pred_classes)
-
-print("Ground Truth Value::", y_test[:5])
-
-
-test_loss, test_acc = model.evaluate(x_test, y_test)
-
-print(f"Test accuracy: {test_acc:.4f}")
-
-
-from sklearn.metrics import confusion_matrix
-
-import matplotlib.pyplot as plt
-
-import seaborn as sns
-
-import numpy as np
-
-
-
-y_predicted = model.predict(x_test)                                              
-
-y_predicted_classes = np.argmax(y_predicted, axis=1)                        
-
-
-
-print("y_test shape:", y_test.shape)
-
-print("y_predicted_classes shape:", y_predicted_classes.shape)
-
-
-
-cm = confusion_matrix(y_test, y_predicted_classes)
-
-
-
-plt.figure(figsize=(10, 8))
-
-seaborn.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-
-plt.xlabel("Predicted")
-
-plt.ylabel("True")
-
-plt.title("Confusion Matrix")
-
-plt.show()
-
-
-from sklearn.metrics import precision_recall_curve, auc
-
-import matplotlib.pyplot as plt
-
-from sklearn.preprocessing import label_binarize
-
-
-y_test_bin = label_binarize(y_test, classes=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-
-y_predicted = model.predict(x_test)
-
-
-precision = dict()
-
-recall = dict()
-
-average_precision = dict()
-
-for i in range(10):
-
-    precision[i], recall[i], _ = precision_recall_curve(y_test_bin[:, i], y_predicted[:, i])
-
-    average_precision[i] = auc(recall[i], precision[i])
-
-
-plt.figure(figsize=(10, 8))
-
-for i in range(10):
-
-    plt.plot(recall[i], precision[i], lw=2, label='Class {0} (AP = {1:0.2f})'.format(i, average_precision[i]))
-
-plt.xlabel("Recall")
-
-plt.ylabel("Precision")
-
-plt.title("Precision-Recall Curve per Class")
-
-plt.legend(loc="lower left")
-
-plt.show()
-
-
-from sklearn.metrics import f1_score
-
-f1score = f1_score(y_test, y_predicted_classes, average='weighted')
-
-print(f"F1 Score: {f1score:.4f}")
-
+ipinstallwittgensteinpandasscikit-learn
+importpandasas pd
+importwittgensteinaslw
+fromsklearn.model_selectionimporttrain_test_split
+fromsklearn.metricsimportaccuracy_score
+df=pd.read_csv("playtennis.csv")
+ifdf['PlayTennis'].dtype==object:
+df['PlayTennis']=df['PlayTennis'].map({'Yes':True,'No':False})
+train,test=train_test_split(df,test_size=0.2,random_state=42)
+ripper_clf=lw.RIPPER(random_state=42,verbosity=0)
+ripper_clf.fit(train,class_feat='PlayTennis',pos_class=True)
+print("LearnedRIPPERRules:")
+print(ripper_clf.ruleset_)
+X_test=test.drop('PlayTennis',axis=1)
+y_test=test['PlayTennis']
+predictions=['Yes'ifp else'No'forp inripper_clf.predict(X_test)]
+y_test_labels=['Yes'ifyelse'No'foryiny_test]
+accuracy=accuracy_score(y_test_labels,predictions)
+print(f"Accuracyontestset:{accuracy:.2f}")
+print("\nDetailedRuleSetAnalysis:")
+ripper_clf.out_model()
+importpandasas pd
+importwittgensteinaslw
+fromsklearn.model_selectionimporttrain_test_split
+fromsklearn.metricsimportaccuracy_score,classification_report,confusion_matrix
+df=pd.read_csv("mushrooms.csv")
+df['class']=df['class'].map({'e':False,'p':True})
+train,test=train_test_split(df,test_size=0.3,random_state=42)
+ripper_clf=lw.RIPPER(random_state=42,verbosity=0)
+ripper_clf.fit(train,class_feat='class',pos_class=True)
+print("LearnedRIPPERRules:")
+print(ripper_clf.ruleset_)
+X_test=test.drop('class',axis=1)
+y_test=test['class']
+predictions=ripper_clf.predict(X_test)
+accuracy=accuracy_score(y_test,predictions)
+print(f"\nAccuracyontestset:{accuracy:.4f}")
+print("\nDetailedRuleSetAnalysis:")
+ripper_clf.out_model()
+print("\nConfusionMatrix:")
+print(confusion_matrix(y_test,predictions))
+print("\nClassificationReport:")
+print(classification_report(y_test,predictions,target_names=["Edible","Poisonous"]))

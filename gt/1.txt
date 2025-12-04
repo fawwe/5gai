@@ -1,19 +1,43 @@
-!pip install gensim
-
-from gensim.models import Word2Vec
-
-corpus = [
-    "The king and queen ruled the kingdom.",
-    "A man and a woman are walking in the rain.",
-    "Teachers share knowledge with their students."
-]
-
-tokenized = [s.lower().split() for s in corpus]
-
-model = Word2Vec(tokenized, vector_size=50, window=3, min_count=1, sg=1, epochs=100)
-
-print("\nWord Embeddings (sample values):\n")
-
-for w in model.wv.index_to_key:
-
-    print(f"{w}: {model.wv[w][:1]}")
+importcsv
+withopen('enjoysport.csv','r')asfile:
+data=[rowforrowincsv.reader(file)]
+print("Thetotalnumberoftraining instancesare:",len(data)-1,'\n',data[1:])
+num_attribute=len(data[0])-1
+hypothesis=['0']*num_attribute
+foriinrange(0,len(data)):
+ifdata[i][num_attribute]=='yes':
+forjinrange(0,num_attribute):
+ifhypothesis[j]=='0'orhypothesis[j]==data[i][j]:
+hypothesis[j]=data[i][j]
+else:
+hypothesis[j]='?'
+print("\nThehypothesisforthetraininginstance{}is:\n".format(i),hypothesis)
+print("\nTheMaximallyspecifichypothesisforthetraining instancesis",hypothesis)
+#CANDIDATEELIMINATIONALGORITHM
+importnumpyasnp
+importpandasas pd
+data=pd.read_csv('enjoysport.csv')
+concepts=np.array(data.iloc[:,0:-1])
+target=np.array(data.iloc[:,-1])
+deflearn(concepts,target):
+specific_h=concepts[0].copy()
+general_h=[["?" for_inrange(len(specific_h))]for_inrange(len(specific_h))]
+fori,hinenumerate(concepts):
+iftarget[i]=="yes":
+forxinrange(len(specific_h)):
+ifh[x]!=specific_h[x]:
+specific_h[x]='?'
+general_h[x][x]='?'
+iftarget[i]=="no":
+forxinrange(len(specific_h)):
+ifh[x]!=specific_h[x]:
+general_h[x][x]=specific_h[x]
+else:
+general_h[x][x]='?'
+indices=[ifori,valinenumerate(general_h)ifval==['?']*len(specific_h)]
+foriinindices:
+general_h.remove(['?']*len(specific_h))
+returnspecific_h,general_h
+s_final,g_final=learn(concepts,target)
+print("FinalSpecific_h:",s_final)
+print("FinalGeneral_h:",g_final)

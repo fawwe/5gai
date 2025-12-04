@@ -1,107 +1,23 @@
-
-import tensorflow as tf
-
-from tensorflow import keras
-
-import numpy as np
-
-import matplotlib.pyplot as plt
-
-
-vocab_size = 10000
-
-maxlen = 200
-
-(x_train, y_train), (x_test, y_test)= keras.datasets.imdb.load_data(num_words=vocab_size)
-
-
-x_train=keras.preprocessing.sequence.pad_sequences(x_train, maxlen=maxlen)
-
-x_test=keras.preprocessing.sequence.pad_sequences(x_test, maxlen=maxlen)
-
-print (f" Training samples: {len(x_train)}")
-
-print(f"Testing samples: {len(x_test)}")
-
-
-model=keras.Sequential([
-    keras.layers.Embedding(input_dim=vocab_size, output_dim=64, input_length=maxlen),
-    keras.layers.LSTM(128),
-    keras.layers.Dense(64, activation='relu'),
-    keras.layers.Dense(1, activation='sigmoid')
-])
-
-
-model.compile(
-    optimizer='adam',
-    loss='binary_crossentropy',
-    metrics=['accuracy']
-)
-
-model.build(input_shape=(None, maxlen))
-
-model.summary()
-
-
-history=model.fit(
-    x_train, y_train,
-    epochs=10,
-    batch_size=128,
-    validation_split=0.2,
-    verbose=1
-)
-
-
-model.save("TextDoc_Classification_model_1.keras")
-
-
-test_loss, test_acc=model.evaluate(x_test, y_test, verbose=1)
-
-print(f"Test accuracy: {test_acc:.3f}")
-
-
-import matplotlib.pyplot as plt
-
-plt.plot(history.history['accuracy'], label='Train Accuracy')
-
-plt.plot(history.history['val_accuracy'], label = 'Validation Accuracy')
-
-plt.title('Training & Validation Accuracy')
-
-plt.xlabel('Epochs')
-
-plt.ylabel('Accuracy')
-
-plt.legend()
-
-plt.show()
-
-
-word_index = keras.datasets.imdb.get_word_index()
-
-
-def encode_text(text):
-
-
-    tokens = [word_index.get(word.lower(), 2) for word in text.split()]                         
-
-    return keras.preprocessing.sequence.pad_sequences([tokens], maxlen=maxlen)
-
-
-sample_reviews = [
-    "This movie was fantastic! I loved the acting and the story.",
-    "Terrible film. Waste of time and money.",
-    "It was ok, not great but can be watched not even once.",
-]
-
-
-for review in sample_reviews:
-
-    encoded = encode_text(review)
-
-    prediction = model.predict(encoded)[0][0]
-
-    sentiment = "Positive" if prediction > 0.5 else "Negative"
-
-    print(f"Review: {review}\nPredicted Sentiment: {sentiment} (Score: {prediction:.2f})\n")
-
+pinstallMiniSom
+importnumpyasnp
+importmatplotlib.pyplotasplt
+fromsklearn.datasetsimportload_iris
+fromsklearn.preprocessingimportMinMaxScaler
+importpandasas pd
+fromminisomimportMiniSom
+iris=load_iris()
+data=iris.data
+feature_names=iris.feature_names
+scaler=MinMaxScaler()
+scaled_data=scaler.fit_transform(data)
+df=pd.DataFrame(data,columns=feature_names)
+print(df.head())
+som_x,som_y=10,10
+som=MiniSom(som_x,som_y,data.shape[1],sigma=1.0,learning_rate=0.5)
+som.random_weights_init(scaled_data)
+som.train_random(scaled_data,1000)
+plt.figure(figsize=(10,10))
+plt.pcolor(som.distance_map().T,cmap='bone_r')
+plt.colorbar()
+plt.title('SOMU-MatrixDistanceMap')
+plt.show(
